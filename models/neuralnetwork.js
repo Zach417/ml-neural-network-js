@@ -25,12 +25,13 @@ function NeuralNetwork () {
     for (var i = 0; i < this.hiddenLayers.length; i++) {
       z = MatrixUtility.multiply(a, this.dendriteLayers[i]);
       a = this.hiddenLayers[i].activate(z);
+      this.hiddenLayers[i].z = z;
+      this.hiddenLayers[i].a = a;
     }
 
-    var zOutput = MatrixUtility.multiply(a, this.dendriteLayers[this.dendriteLayers.length - 1]);
-    var aOutput = this.outputLayer.activate(zOutput);
-    var yHat = aOutput;
-    return yHat;
+    this.outputLayer.z = MatrixUtility.multiply(a, this.dendriteLayers[this.dendriteLayers.length - 1]);
+    this.yHat = this.outputLayer.activate(this.outputLayer.z);
+    return this.yHat;
   }
 
   this.generateDendrites = function () {
