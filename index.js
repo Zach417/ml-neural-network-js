@@ -14,7 +14,7 @@ neuralNetwork.outputLayer.size = trainY[0].length;
 neuralNetwork.outputLayer.setActivation("sigmoid");
 neuralNetwork.generate();
 
+// train and print results
 trainer.neuralNetwork = neuralNetwork;
-
-trainer.train(1);
+trainer.train(5);
 trainer.printResults();
