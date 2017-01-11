@@ -17,7 +17,7 @@ function Trainer() {
     var trainX = this.data.getTrainingX();
     var trainY = this.data.getTrainingY();
     var w = this.neuralNetwork.dendriteLayers;
-    console.log("\nComputing cost function");
+    console.log("\nComputing cost function - " + reps + " iterations");
 
     for (var d = 0; d < reps; d++) {
       this.yHat = this.neuralNetwork.forward(trainX);
@@ -27,22 +27,18 @@ function Trainer() {
       for (var i = 0; i < this.dJdW.length; i++) {
         var newWeights = nj.array(w[i]);
         var scalar = this.dJdW[i].assign(this.scalar);
-        if (!this.cost || cost < this.cost) {
-          newWeights = newWeights.subtract(scalar.multiply(this.dJdW[i])).tolist();
-        } else {
-          newWeights = newWeights.add(scalar.multiply(this.dJdW[i])).tolist();
-        }
+        newWeights = newWeights.subtract(scalar.multiply(this.dJdW[i])).tolist();
         this.neuralNetwork.dendriteLayers[i] = newWeights;
       }
 
       this.cost = cost;
 
       if (d * 10 % reps === 0) {
-        console.log("Cost: " + this.cost + " (" + d + ")");
+        console.log("Cost: " + this.cost + " (" + Number(d/reps*100).toFixed(0) + "%)");
       }
     }
 
-    console.log("Cost: " + this.cost + " (" + reps + ") (final)");
+    console.log("Cost: " + this.cost + " (100%)");
   }
 
   this.computeCost = function (x, y) {
