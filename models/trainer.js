@@ -22,15 +22,15 @@ function Trainer() {
       var cost = this.computeCost(trainY);
       this.computeGradient(trainX, trainY);
 
-      var scalar1 = this.dJdW1.assign(this.scalar);
-      var scalar2 = this.dJdW2.assign(this.scalar);
-
-      if (!this.cost || cost < this.cost) {
-        this.neuralNetwork.dendriteLayers[0] = nj.array(w[0]).subtract(scalar1.multiply(this.dJdW1)).tolist();
-        this.neuralNetwork.dendriteLayers[1] = nj.array(w[1]).subtract(scalar2.multiply(this.dJdW2)).tolist();
-      } else {
-        this.neuralNetwork.dendriteLayers[0] = nj.array(w[0]).add(scalar1.multiply(this.dJdW1)).tolist();
-        this.neuralNetwork.dendriteLayers[1] = nj.array(w[1]).add(scalar2.multiply(this.dJdW2)).tolist();
+      for (var i = 0; i < this.dJdW.length; i++) {
+        var scalar = this.dJdW[i].assign(this.scalar);
+        var newWeights = nj.array(w[i]);
+        if (!this.cost || cost < this.cost) {
+          newWeights = newWeights.subtract(scalar.multiply(this.dJdW[i])).tolist();
+        } else {
+          newWeights = newWeights.add(scalar.multiply(this.dJdW[i])).tolist();
+        }
+        this.neuralNetwork.dendriteLayers[i] = newWeights;
       }
 
       this.cost = cost;
@@ -51,15 +51,24 @@ function Trainer() {
     var x = nj.array(x);
     var y = nj.array(y);
     var yHat = nj.array(this.yHat);
-    var z3 = nj.array(this.neuralNetwork.outputLayer.activatePrime(this.neuralNetwork.outputLayer.z));
-    var a2 = nj.array(this.neuralNetwork.hiddenLayers[0].a);
-    var w2 = nj.array(this.neuralNetwork.dendriteLayers[1]);
-    var z2 = nj.array(this.neuralNetwork.hiddenLayers[0].activatePrime(this.neuralNetwork.hiddenLayers[0].z));
+    var zOutput = nj.array(this.neuralNetwork.outputLayer.activatePrime(this.neuralNetwork.outputLayer.z));
 
-    var delta3 = nj.negative(y.subtract(yHat)).multiply(z3);
-    this.dJdW2 = nj.dot(a2.T, delta3);
-    var delta2 = nj.dot(delta3, w2.T).multiply(z2);
-    this.dJdW1 = nj.dot(x.T, delta2);
+    var hl = this.neuralNetwork.hiddenLayers;
+    var dl = this.neuralNetwork.dendriteLayers;
+
+    // initial backward propagation from output layer
+    this.delta[hl.length] = nj.negative(y.subtract(yHat)).multiply(zOutput);
+    this.dJdW[hl.length] = nj.dot(nj.array(hl[hl.length - 1].a).T, this.delta[hl.length]);
+
+    // continue backward propagation through hidden layers of network
+    for (var i = hl.length - 1; i > 0; i--) {
+      this.delta[i] = nj.dot(this.delta[i + 1], nj.array(dl[i + 1]).T).multiply(nj.array(hl[i].activatePrime(hl[i].z)));
+      this.dJdW[i] = nj.dot(nj.array(hl[i].a).T, this.delta[i]);
+    }
+
+    // final backward propagation
+    this.delta[0] = nj.dot(this.delta[1], nj.array(dl[1]).T).multiply(nj.array(hl[0].activatePrime(hl[0].z)));
+    this.dJdW[0] = nj.dot(x.T, this.delta[0]);
   }
 
   this.printResults = function () {
