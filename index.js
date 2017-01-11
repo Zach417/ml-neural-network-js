@@ -16,5 +16,6 @@ neuralNetwork.generate();
 
 // train and print results
 trainer.neuralNetwork = neuralNetwork;
-trainer.train(5);
+trainer.scalar = 2;
+trainer.train(1000);
 trainer.printResults();
