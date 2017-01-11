@@ -1,3 +1,4 @@
+var nj = require('numjs');
 var DataUtility = require('../utils/data');
 var mu = require('../utils/matrix');
 
@@ -7,41 +8,58 @@ function Trainer() {
   this.cost;
   this.gradient;
   this.yHat;
-  this.scalar = 10;
+  this.scalar = 3;
+  this.delta = [];
+  this.dJdW = [];
 
   this.train = function (reps) {
     var trainX = this.dataUtility.getTrainingX();
     var trainY = this.dataUtility.getTrainingY();
+    var w = this.neuralNetwork.dendriteLayers;
+
     for (var d = 0; d < reps; d++) {
       this.yHat = this.neuralNetwork.forward(trainX);
       var cost = this.computeCost(trainY);
       this.computeGradient(trainX, trainY);
 
+      var scalar1 = this.dJdW1.assign(this.scalar);
+      var scalar2 = this.dJdW2.assign(this.scalar);
+
       if (!this.cost || cost < this.cost) {
-        this.neuralNetwork.dendriteLayers[0] = mu.subtract(mu.multiplyInt(this.dJdW1, this.scalar), this.neuralNetwork.dendriteLayers[0]);
-        this.neuralNetwork.dendriteLayers[1] = mu.subtract(mu.multiplyInt(this.dJdW2, this.scalar), this.neuralNetwork.dendriteLayers[1]);
+        this.neuralNetwork.dendriteLayers[0] = nj.array(w[0]).subtract(scalar1.multiply(this.dJdW1)).tolist();
+        this.neuralNetwork.dendriteLayers[1] = nj.array(w[1]).subtract(scalar2.multiply(this.dJdW2)).tolist();
       } else {
-        this.neuralNetwork.dendriteLayers[0] = mu.add(mu.multiplyInt(this.dJdW1, this.scalar), this.neuralNetwork.dendriteLayers[0]);
-        this.neuralNetwork.dendriteLayers[1] = mu.add(mu.multiplyInt(this.dJdW2, this.scalar), this.neuralNetwork.dendriteLayers[1]);
+        this.neuralNetwork.dendriteLayers[0] = nj.array(w[0]).add(scalar1.multiply(this.dJdW1)).tolist();
+        this.neuralNetwork.dendriteLayers[1] = nj.array(w[1]).add(scalar2.multiply(this.dJdW2)).tolist();
       }
 
       this.cost = cost;
-      console.log(this.cost);
+
+      if (d * 10 % reps === 0) {
+        console.log("Cost: " + this.cost);
+      }
     }
   }
 
   this.computeCost = function (y) {
-    return 0.5 * mu.sum(mu.pow(mu.subtract(y,this.yHat), 2));
+    var y = nj.array(y);
+    var yHat = nj.array(this.yHat);
+    return 0.5 * y.subtract(yHat).pow(2).sum();
   }
 
   this.computeGradient = function (x, y) {
-    var differential = mu.multiplyInt(mu.subtract(y,this.yHat), -1);
-    var outputLayerAFP = this.neuralNetwork.outputLayer.activatePrime(this.neuralNetwork.outputLayer.z);
-    var delta3 = mu.multiply(outputLayerAFP, differential); // element multiplication
-    this.dJdW2 = mu.multiply(mu.transpose(this.neuralNetwork.hiddenLayers[0].a), delta3); // matrix multiplication
-    var delta2 = mu.multiply(delta3, mu.transpose(this.neuralNetwork.dendriteLayers[1])); // matrix multiplication
-    delta2 = mu.multiply(delta2, this.neuralNetwork.hiddenLayers[0].activatePrime(this.neuralNetwork.hiddenLayers[0].z));
-    this.dJdW1 = mu.multiply(mu.transpose(x), delta2); // dot multiplication
+    var x = nj.array(x);
+    var y = nj.array(y);
+    var yHat = nj.array(this.yHat);
+    var z3 = nj.array(this.neuralNetwork.outputLayer.activatePrime(this.neuralNetwork.outputLayer.z));
+    var a2 = nj.array(this.neuralNetwork.hiddenLayers[0].a);
+    var w2 = nj.array(this.neuralNetwork.dendriteLayers[1]);
+    var z2 = nj.array(this.neuralNetwork.hiddenLayers[0].activatePrime(this.neuralNetwork.hiddenLayers[0].z));
+
+    var delta3 = nj.negative(y.subtract(yHat)).multiply(z3);
+    this.dJdW2 = nj.dot(a2.T, delta3);
+    var delta2 = nj.dot(delta3, w2.T).multiply(z2);
+    this.dJdW1 = nj.dot(x.T, delta2);
   }
 
   this.printResults = function () {
@@ -49,8 +67,8 @@ function Trainer() {
     var trainY = this.dataUtility.getTrainingY();
     this.yHat = this.neuralNetwork.forward(trainX);
     for (var i = 0; i < this.yHat.length; i++) {
-      var line = "Prediction: " + Number(this.yHat[i]).toFixed(4) + "; ";
-      line += "Actual: " + Number(trainY[i]).toFixed(4) + ";";
+      var line = "Prediction: " + this.yHat[i] + "; ";
+      line += "Actual: " + trainY[i] + ";";
       console.log(line);
     }
   }
