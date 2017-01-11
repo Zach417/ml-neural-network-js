@@ -25,9 +25,8 @@ function Trainer() {
       this.computeGradient(trainX, trainY);
 
       for (var i = 0; i < this.dJdW.length; i++) {
-        var newWeights = nj.array(w[i]);
-        var scalar = this.dJdW[i].assign(this.scalar);
-        newWeights = newWeights.subtract(scalar.multiply(this.dJdW[i])).tolist();
+        var scalar = this.dJdW[i].aign(this.scalar);
+        var newWeights = nj.array(w[i]).subtract(scalar.multiply(this.dJdW[i])).tolist();
         this.neuralNetwork.dendriteLayers[i] = newWeights;
       }
 
