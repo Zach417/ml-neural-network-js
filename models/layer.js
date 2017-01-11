@@ -1,3 +1,5 @@
+var nj = require('numjs');
+
 function Layer() {
   this.size = 0;
   this.activation;
@@ -10,14 +12,15 @@ function Layer() {
       throw "Activation function has not been set for this layer";
     }
 
-    var a = z;
-    for (var i = 0; i < z.length; i++) {
-      for (var j = 0; j < z[i].length; j++) {
-        a[i][j] = this.activation(z[i][j]);
+    var a = z.tolist();
+    var zlist = z.tolist();
+    for (var i = 0; i < zlist.length; i++) {
+      for (var j = 0; j < zlist[i].length; j++) {
+        a[i][j] = this.activation(zlist[i][j]);
       }
     }
 
-    return a;
+    return nj.array(a);
   }
 
   this.activatePrime = function (z) {
@@ -25,14 +28,15 @@ function Layer() {
       throw "Activation function prime has not been set for this layer";
     }
 
-    var a = z;
-    for (var i = 0; i < z.length; i++) {
-      for (var j = 0; j < z[i].length; j++) {
-        a[i][j] = this.activationPrime(z[i][j]);
+    var a = z.tolist();
+    var zlist = z.tolist();
+    for (var i = 0; i < zlist.length; i++) {
+      for (var j = 0; j < zlist[i].length; j++) {
+        a[i][j] = this.activationPrime(zlist[i][j]);
       }
     }
 
-    return a;
+    return nj.array(a);
   }
 
   this.setActivation = function (af, afp) {
