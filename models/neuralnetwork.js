@@ -1,5 +1,5 @@
+var nj = require('numjs');
 var Layer = require('./layer');
-var MatrixUtility = require('../utils/matrix');
 
 function NeuralNetwork () {
   this.inputLayer = new Layer();
@@ -19,17 +19,17 @@ function NeuralNetwork () {
   }
 
   this.forward = function (x) {
-    var z = x;
-    var a = x;
+    var z = nj.array(x);
+    var a = nj.array(x);
 
     for (var i = 0; i < this.hiddenLayers.length; i++) {
-      z = MatrixUtility.multiply(a, this.dendriteLayers[i]);
+      z = a.dot(this.dendriteLayers[i]);
       a = this.hiddenLayers[i].activate(z);
       this.hiddenLayers[i].z = z;
       this.hiddenLayers[i].a = a;
     }
 
-    this.outputLayer.z = MatrixUtility.multiply(a, this.dendriteLayers[this.dendriteLayers.length - 1]);
+    this.outputLayer.z = a.dot(this.dendriteLayers[this.dendriteLayers.length - 1]);
     this.yHat = this.outputLayer.activate(this.outputLayer.z);
     return this.yHat;
   }
@@ -40,16 +40,16 @@ function NeuralNetwork () {
       var z2 = z1;
       for (var i = 0; i < this.hiddenLayers.length; i++) {
         z2 = this.hiddenLayers[i].size;
-        this.dendriteLayers.push(MatrixUtility.generateMatrix(z1, z2));
+        this.dendriteLayers.push(nj.random(z1, z2));
         z1 = z2;
       }
 
       z2 = this.outputLayer.size;
-      this.dendriteLayers.push(MatrixUtility.generateMatrix(z1, z2));
+      this.dendriteLayers.push(nj.random(z1, z2));
     } else {
       var z1 = this.inputLayer.size;
       var z2 = this.outputLayer.size;
-      this.dendriteLayers.push(MatrixUtility.generateMatrix(z1, z2));
+      this.dendriteLayers.push(nj.random(z1, z2));
     }
   }
 }
