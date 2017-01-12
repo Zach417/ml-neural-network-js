@@ -16,7 +16,7 @@ function Trainer() {
   this.train = function (reps) {
     var trainX = this.data.getTrainingX();
     var trainY = this.data.getTrainingY();
-    var w = this.neuralNetwork.dendriteLayers;
+    var w = this.neuralNetwork.weights;
     console.log("\nComputing cost function - " + reps + " iterations");
 
     for (var d = 0; d < reps; d++) {
@@ -27,7 +27,7 @@ function Trainer() {
       for (var i = 0; i < this.dJdW.length; i++) {
         var scalar = this.dJdW[i].assign(this.scalar);
         var newWeights = nj.array(w[i]).subtract(scalar.multiply(this.dJdW[i])).tolist();
-        this.neuralNetwork.dendriteLayers[i] = newWeights;
+        this.neuralNetwork.weights[i] = newWeights;
       }
 
       this.cost = cost;
@@ -43,7 +43,7 @@ function Trainer() {
   this.computeCost = function (x, y) {
     var x = nj.array(x);
     var y = nj.array(y);
-    var dl = this.neuralNetwork.dendriteLayers;
+    var dl = this.neuralNetwork.weights;
     var w = 0;
     for (var i = 0; i < dl.length; i++) {
       w += nj.array(dl[i]).pow(2).sum();
@@ -54,10 +54,10 @@ function Trainer() {
   this.computeGradient = function (x, y) {
     var x = nj.array(x);
     var y = nj.array(y);
-    var zOutput = nj.array(this.neuralNetwork.outputLayer.activatePrime(this.neuralNetwork.outputLayer.z));
+    var zOutput = nj.array(this.neuralNetwork.output.activatePrime(this.neuralNetwork.output.z));
 
-    var hl = this.neuralNetwork.hiddenLayers;
-    var dl = this.neuralNetwork.dendriteLayers;
+    var hl = this.neuralNetwork.hidden;
+    var dl = this.neuralNetwork.weights;
 
     // initial backward propagation from output layer
     this.delta[hl.length] = nj.negative(y.subtract(this.yHat)).multiply(zOutput);
