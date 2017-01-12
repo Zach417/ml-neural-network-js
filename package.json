@@ -16,11 +16,11 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Zach417/ml-neural-network-js.git"
+    "url": "git+https://github.com/Zach417/neural-network.git"
   },
   "bugs": {
-    "url": "https://github.com/Zach417/ml-neural-network-js/issues"
+    "url": "https://github.com/Zach417/neural-network/issues"
   },
-  "homepage": "https://github.com/Zach417/ml-neural-network-js#readme",
+  "homepage": "https://github.com/Zach417/neural-network#readme",
   "description": ""
 }
