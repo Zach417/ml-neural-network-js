@@ -1,14 +1,26 @@
 {
-  "name": "ml-neural-network-js",
+  "name": "neural-network",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test"
   },
-  "author": "",
+  "author": "Zach Allen",
   "license": "ISC",
   "dependencies": {
     "numjs": "^0.12.3"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zach417/ml-neural-network-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Zach417/ml-neural-network-js/issues"
+  },
+  "homepage": "https://github.com/Zach417/ml-neural-network-js#readme",
+  "description": ""
 }
