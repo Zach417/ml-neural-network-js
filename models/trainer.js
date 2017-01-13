@@ -1,3 +1,6 @@
+var fs = require('fs');
+var path = require('path');
+
 var nj = require('numjs');
 var DataUtility = require('../utils/data');
 var mu = require('../utils/matrix');
@@ -17,8 +20,8 @@ function Trainer() {
     var trainX = this.data.getTrainingX();
     var trainY = this.data.getTrainingY();
     var w = this.neuralNetwork.weights;
-    console.log("\nComputing cost function - " + reps + " iterations");
 
+    console.log("\nComputing cost function - " + reps + " iterations");
     for (var d = 0; d < reps; d++) {
       this.yHat = this.neuralNetwork.forward(trainX);
       var cost = this.computeCost(trainX, trainY);
@@ -33,6 +36,7 @@ function Trainer() {
       this.cost = cost;
 
       if (d * 10 % reps === 0) {
+        //console.log("Weights: " + this.neuralNetwork.weights);
         console.log("Cost: " + this.cost + " (" + Number(d/reps*100).toFixed(0) + "%)");
       }
     }
@@ -48,6 +52,7 @@ function Trainer() {
     for (var i = 0; i < dl.length; i++) {
       w += nj.array(dl[i]).pow(2).sum();
     }
+
     return (0.5 * y.subtract(this.yHat).pow(2).sum() / x.shape[0]) + ((this.lambda / 2) * w);
   }
 
@@ -74,6 +79,16 @@ function Trainer() {
     // final backward propagation
     this.delta[0] = nj.dot(this.delta[1], nj.array(dl[1]).T).multiply(nj.array(hl[0].activatePrime(hl[0].z)));
     this.dJdW[0] = nj.dot(x.T, this.delta[0]);
+  }
+
+  this.writeToFile = function () {
+    var neuralJSON = this.neuralNetwork.toJSON();
+    var json = JSON.stringify(neuralJSON);
+    var filePath = path.join(__dirname, '..', '/data/weights/', neuralJSON.name + '.json');
+    fs.writeFile(filePath, json, 'utf8', function (err) {
+      if (err) return console.log(err);
+      console.log("Neural Network JSON saved to " + filePath)
+    });
   }
 
   this.printResults = function (x, y) {
