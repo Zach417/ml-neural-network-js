@@ -82,6 +82,43 @@ function NeuralNetwork () {
       this.weights.push(nj.random(z1, z2));
     }
   }
+
+  this.toJSON = function () {
+    var json = {
+      name: "",
+      input: {
+        size: this.input.size,
+        activation: this.input.activation,
+      },
+      hidden: [],
+      output: {
+        size: this.output.size,
+        activation: this.output.activation,
+      },
+      weights: this.weights,
+    }
+
+    // set default name
+    var date = new Date();
+    json.name =
+      date.getFullYear().toString()
+      + date.getMonth().toString()
+      + date.getDate().toString()
+      + date.getHours().toString()
+      + date.getMinutes().toString()
+      + date.getSeconds().toString();
+
+    // set hidden layers
+    for (var i = 0; i < this.hidden.length; i++) {
+      var layer = this.hidden[i];
+      json.hidden.push({
+        size: layer.size,
+        activation: layer.activation,
+      });
+    }
+
+    return json;
+  }
 }
 
 module.exports = NeuralNetwork;
