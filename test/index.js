@@ -12,22 +12,24 @@ var testY = trainY;
 // architect neural network
 var neuralNetwork = new NeuralNetwork();
 neuralNetwork.input.size = trainX[0].length;
-neuralNetwork.addHiddenLayer(5, "sigmoid");
-neuralNetwork.addHiddenLayer(5, "sigmoid");
-neuralNetwork.addHiddenLayer(5, "sigmoid");
+neuralNetwork.input.setActivation("linear");
+neuralNetwork.addHiddenLayer(6, "hyperbolic-tangent");
+neuralNetwork.addHiddenLayer(6, "hyperbolic-tangent");
+neuralNetwork.addHiddenLayer(6, "hyperbolic-tangent");
 neuralNetwork.output.size = trainY[0].length;
-neuralNetwork.output.setActivation("sigmoid");
+neuralNetwork.output.setActivation("hyperbolic-tangent");
 neuralNetwork.generate();
 
 // train
 trainer.neuralNetwork = neuralNetwork;
 trainer.scalar = 1.0;
-trainer.lambda = 0.0;
-trainer.train(10000);
+trainer.lambda = 0.0001;
+trainer.train(1000);
+trainer.writeToFile();
 
 // print results
 console.log("\nTraining data set results");
-trainer.printResults(trainX, trainY);
+trainer.printResults(trainX.splice(0,10), trainY.splice(0,10));
 
-console.log("\nTesting data set results");
-trainer.printResults(testX, testY);
+//console.log("\nTesting data set results");
+//trainer.printResults(testX, testY);
