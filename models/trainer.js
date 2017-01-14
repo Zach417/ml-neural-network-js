@@ -37,11 +37,13 @@ function Trainer() {
 
       if (d * 10 % reps === 0) {
         //console.log("Weights: " + this.neuralNetwork.weights);
-        console.log("Cost: " + this.cost + " (" + Number(d/reps*100).toFixed(0) + "%)");
+        console.log("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/reps*100).toFixed(2) + "%)");
+      } else {
+        process.stdout.write("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/reps*100).toFixed(2) + "%)\r");
       }
     }
 
-    console.log("Cost: " + this.cost + " (100%)");
+    console.log("Cost: " + Number(this.cost).toFixed(8) + " (100%)");
   }
 
   this.computeCost = function (x, y) {
