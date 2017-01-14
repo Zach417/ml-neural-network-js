@@ -88,12 +88,12 @@ function NeuralNetwork () {
       name: "",
       input: {
         size: this.input.size,
-        activation: this.input.activation,
+        activation: this.input.activationName,
       },
       hidden: [],
       output: {
         size: this.output.size,
-        activation: this.output.activation,
+        activation: this.output.activationName,
       },
       weights: this.weights,
     }
@@ -113,7 +113,7 @@ function NeuralNetwork () {
       var layer = this.hidden[i];
       json.hidden.push({
         size: layer.size,
-        activation: layer.activation,
+        activation: layer.activationName,
       });
     }
 

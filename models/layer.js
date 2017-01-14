@@ -4,6 +4,7 @@ var math = require('../utils/math');
 function Layer() {
   this.size = 0;
   this.activation;
+  this.activationName;
 
   this.z; //
   this.a; // activation function of z
@@ -45,6 +46,7 @@ function Layer() {
       this.activation = af;
       this.activationPrime = afp;
     } else if (typeof af === "string") {
+      this.activationName = af;
       this.activation = this.deriveActivation(af);
       this.activationPrime = this.deriveActivationPrime(af);
     } else {
