@@ -1,4 +1,5 @@
 var nj = require('numjs');
+var math = require('../utils/math');
 
 function Layer() {
   this.size = 0;
@@ -57,6 +58,10 @@ function Layer() {
         return function (x) {
           return 1 / (1 + Math.exp(-x));
         }
+      case "hyperbolic-tangent":
+        return function (x) {
+          return math.tanh(x);
+        }
       case "linear":
         return function (x) {
           return x;
@@ -69,6 +74,10 @@ function Layer() {
       case "sigmoid":
         return function (x) {
           return Math.exp(-x) / Math.pow((1 + Math.exp(-x)), 2)
+        }
+      case "hyperbolic-tangent":
+        return function (x) {
+          return 1 - Math.pow(math.tanh(x), 2);
         }
       case "linear":
         return function (x) {
