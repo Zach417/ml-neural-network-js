@@ -62,7 +62,7 @@ function Layer() {
         }
       case "hyperbolic-tangent":
         return function (x) {
-          return math.tanh(x);
+          return Math.tanh(x);
         }
       case "linear":
         return function (x) {
@@ -79,7 +79,7 @@ function Layer() {
         }
       case "hyperbolic-tangent":
         return function (x) {
-          return 1 - Math.pow(math.tanh(x), 2);
+          return 1 - Math.pow(Math.tanh(x), 2);
         }
       case "linear":
         return function (x) {

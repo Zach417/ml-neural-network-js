@@ -10,19 +10,20 @@ function Trainer() {
   this.lambda = 0.001;
   this.scalar = 3;
   this.data = new DataUtility();
+  this.goal;
   this.cost;
   this.gradient;
   this.yHat;
   this.delta = [];
   this.dJdW = [];
 
-  this.train = function (reps) {
+  this.train = function (epochs) {
     var trainX = this.data.getTrainingX();
     var trainY = this.data.getTrainingY();
     var w = this.neuralNetwork.weights;
 
-    console.log("\nComputing cost function - " + reps + " iterations");
-    for (var d = 0; d < reps; d++) {
+    console.log("\nComputing cost function - " + epochs + " iterations");
+    for (var d = 0; d < epochs; d++) {
       this.yHat = this.neuralNetwork.forward(trainX);
       var cost = this.computeCost(trainX, trainY);
       this.computeGradient(trainX, trainY);
@@ -35,11 +36,16 @@ function Trainer() {
 
       this.cost = cost;
 
-      if (d * 10 % reps === 0) {
+      if (d * 10 % epochs === 0) {
         //console.log("Weights: " + this.neuralNetwork.weights);
-        console.log("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/reps*100).toFixed(2) + "%)");
+        console.log("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/epochs*100).toFixed(2) + "%)");
       } else {
-        process.stdout.write("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/reps*100).toFixed(2) + "%)\r");
+        process.stdout.write("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/epochs*100).toFixed(2) + "%)               \r");
+      }
+
+      if (this.goal && this.cost < this.goal) {
+        console.log("Performance goal met");
+        return;
       }
     }
 
@@ -63,24 +69,35 @@ function Trainer() {
     var y = nj.array(y);
     var zOutput = nj.array(this.neuralNetwork.output.activatePrime(this.neuralNetwork.output.z));
 
-    var hl = this.neuralNetwork.hidden;
-    var dl = this.neuralNetwork.weights;
+    var hidden = this.neuralNetwork.hidden;
+    var weights = this.neuralNetwork.weights;
 
     // initial backward propagation from output layer
-    this.delta[hl.length] = nj.negative(y.subtract(this.yHat)).multiply(zOutput);
-    this.dJdW[hl.length] = nj.dot(hl[hl.length - 1].a.T, this.delta[hl.length]);
-    this.dJdW[hl.length] = this.dJdW[hl.length].add(this.dJdW[hl.length].assign(this.lambda).multiply(nj.array(dl[hl.length])));
+    this.delta[hidden.length] = nj.negative(y.subtract(this.yHat)).multiply(zOutput);
+    this.dJdW[hidden.length] = nj.dot(hidden[hidden.length - 1].a.T, this.delta[hidden.length]);
+    this.dJdW[hidden.length] = this.dJdW[hidden.length].add(this.dJdW[hidden.length].assign(this.lambda).multiply(nj.array(weights[hidden.length])));
 
     // continue backward propagation through hidden layers of network
-    for (var i = hl.length - 1; i > 0; i--) {
-      this.delta[i] = nj.dot(this.delta[i + 1], nj.array(dl[i + 1]).T).multiply(nj.array(hl[i].activatePrime(hl[i].z)));
-      this.dJdW[i] = nj.dot(hl[i].a.T, this.delta[i]);
-      this.dJdW[i] = this.dJdW[i].add(this.dJdW[i].assign(this.lambda).multiply(nj.array(dl[i])));
+    for (var i = hidden.length - 1; i > 0; i--) {
+      this.delta[i] = nj.dot(this.delta[i + 1], nj.array(weights[i + 1]).T).multiply(nj.array(hidden[i].activatePrime(hidden[i].z)));
+      this.dJdW[i] = nj.dot(hidden[i - 1].a.T, this.delta[i]);
+      this.dJdW[i] = this.dJdW[i].add(this.dJdW[i].assign(this.lambda).multiply(nj.array(weights[i])));
     }
 
     // final backward propagation
-    this.delta[0] = nj.dot(this.delta[1], nj.array(dl[1]).T).multiply(nj.array(hl[0].activatePrime(hl[0].z)));
+    this.delta[0] = nj.dot(this.delta[1], nj.array(weights[1]).T).multiply(nj.array(hidden[0].activatePrime(hidden[0].z)));
     this.dJdW[0] = nj.dot(x.T, this.delta[0]);
+  }
+
+  this.generateFromFile = function (fileName) {
+    var filePath;
+    if (fileName.startsWith(path.join(__dirname, '..'))) {
+      filePath = fileName;
+    } else {
+      filePath = path.join(__dirname, '..', '/data/weights/', fileName);
+    }
+    var json = JSON.parse(fs.readFileSync(filePath));
+    this.neuralNetwork.generate(json);
   }
 
   this.writeToFile = function () {
