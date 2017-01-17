@@ -1,4 +1,4 @@
-var nj = require('numjs');
+var nj = require('../utils/numjs');
 var Layer = require('./layer');
 
 function NeuralNetwork () {

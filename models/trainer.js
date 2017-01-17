@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var nj = require('numjs');
+var nj = require('../utils/numjs');
 var DataUtility = require('../utils/data');
 var mu = require('../utils/matrix');
 
