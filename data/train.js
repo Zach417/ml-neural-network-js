@@ -3,17 +3,27 @@ var path = require('path');
 
 var data = [];
 var max = Math.PI * 2;
-var num = 1000;
-for (var i = 0; i <= num; i++) {
-  var angle = max * (i / num);
+var epochs = 10000;
+var sets = 50;
 
-  var noise = Math.random() * 0.2;
-  noise *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+var f = function (x) {
+  return Math.cos(x);
+}
 
-  data.push({
-    x: [angle],
-    y: [(Math.sin(angle) + noise)]
-  })
+// creates multiple y values for the same x
+// in theory should improve training performances
+for (var x = 0; x < sets; x++) {
+  for (var i = 1; i <= (epochs / sets); i++) {
+    var angle = max * (i / (epochs / sets));
+
+    var noise = Math.random() * 0.0;
+    noise *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+
+    data.push({
+      x: [angle],
+      y: [f(angle) + noise]
+    })
+  }
 }
 
 module.exports = data;
