@@ -16,17 +16,17 @@ function Trainer() {
   this.yHat;
   this.delta = [];
   this.dJdW = [];
+  this.x = this.data.getTrainingX();
+  this.y = this.data.getTrainingY();
 
   this.train = function (epochs) {
-    var trainX = this.data.getTrainingX();
-    var trainY = this.data.getTrainingY();
     var w = this.neuralNetwork.weights;
 
     console.log("\nComputing cost function - " + epochs + " iterations");
     for (var d = 0; d < epochs; d++) {
-      this.yHat = this.neuralNetwork.forward(trainX);
-      var cost = this.computeCost(trainX, trainY);
-      this.computeGradient(trainX, trainY);
+      this.yHat = this.neuralNetwork.forward(this.x);
+      var cost = this.computeCost(this.x, this.y);
+      this.computeGradient(this.x, this.y);
 
       for (var i = 0; i < this.dJdW.length; i++) {
         var scalar = this.dJdW[i].assign(this.scalar);
