@@ -7,8 +7,8 @@ var mu = require('../utils/matrix');
 
 function Trainer() {
   this.neuralNetwork;
-  this.lambda = 0.001;
-  this.scalar = 3;
+  this.lambda = 0.01;
+  this.scalar = 0.000001;
   this.data = new DataUtility();
   this.goal;
   this.cost;
@@ -111,11 +111,14 @@ function Trainer() {
   }
 
   this.printResults = function (x, y) {
+    var n = 15 / x.length;
     var yHat = this.neuralNetwork.forward(x).tolist();
     for (var i = 0; i < yHat.length; i++) {
-      var line = "Prediction: " + yHat[i] + "; ";
-      line += "Actual: " + y[i] + ";";
-      console.log(line);
+      if (Math.random() < n) {
+        var line = "Prediction: " + yHat[i] + "; ";
+        line += "Actual: " + y[i] + ";";
+        console.log(line);
+      }
     }
   }
 }
