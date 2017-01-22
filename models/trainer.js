@@ -1,12 +1,12 @@
 var fs = require('fs');
 var path = require('path');
-
+var NeuralNetwork = require('./NeuralNetwork');
 var nj = require('../utils/numjs');
 var DataUtility = require('../utils/data');
 var mu = require('../utils/matrix');
 
 function Trainer() {
-  this.neuralNetwork;
+  this.neuralNetwork = new NeuralNetwork();
   this.lambda = 0.01;
   this.scalar = 0.000001;
   this.data = new DataUtility();
@@ -39,17 +39,20 @@ function Trainer() {
       if (d * 10 % epochs === 0) {
         //console.log("Weights: " + this.neuralNetwork.weights);
         console.log("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/epochs*100).toFixed(2) + "%)");
+        this.writeToFile();
       } else {
         process.stdout.write("Cost: " + Number(this.cost).toFixed(8) + " (" + Number(d/epochs*100).toFixed(2) + "%)               \r");
       }
 
       if (this.goal && this.cost < this.goal) {
         console.log("Performance goal met");
+        this.writeToFile();
         return;
       }
     }
 
     console.log("Cost: " + Number(this.cost).toFixed(8) + " (100%)");
+    this.writeToFile();
   }
 
   this.computeCost = function (x, y) {
@@ -103,11 +106,9 @@ function Trainer() {
   this.writeToFile = function () {
     var neuralJSON = this.neuralNetwork.toJSON();
     var json = JSON.stringify(neuralJSON);
-    var filePath = path.join(__dirname, '..', '/data/weights/', neuralJSON.name + '.json');
-    fs.writeFile(filePath, json, 'utf8', function (err) {
-      if (err) return console.log(err);
-      console.log("Neural Network JSON saved to " + filePath)
-    });
+    var filePath = path.join(__dirname, '..', '/data/weights/', this.neuralNetwork.name + '.json');
+    fs.writeFileSync(filePath, json, 'utf8');
+    console.log("Neural Network JSON saved to " + this.neuralNetwork.name + '.json')
   }
 
   this.printResults = function (x, y) {

@@ -2,6 +2,7 @@ var nj = require('../utils/numjs');
 var Layer = require('./layer');
 
 function NeuralNetwork () {
+  this.name = "new-neural-network";
   this.input = new Layer();
   this.hidden = [];
   this.output = new Layer();
@@ -23,6 +24,8 @@ function NeuralNetwork () {
   }
 
   this.generateFromJson = function (json) {
+    this.name = json.name;
+    
     // input layer
     this.input.size = json.input.size;
     this.input.setActivation(json.input.activation);
@@ -85,7 +88,7 @@ function NeuralNetwork () {
 
   this.toJSON = function () {
     var json = {
-      name: "",
+      name: this.name,
       input: {
         size: this.input.size,
         activation: this.input.activationName,
@@ -97,16 +100,6 @@ function NeuralNetwork () {
       },
       weights: this.weights,
     }
-
-    // set default name
-    var date = new Date();
-    json.name =
-      date.getFullYear().toString()
-      + date.getMonth().toString()
-      + date.getDate().toString()
-      + date.getHours().toString()
-      + date.getMinutes().toString()
-      + date.getSeconds().toString();
 
     // set hidden layers
     for (var i = 0; i < this.hidden.length; i++) {

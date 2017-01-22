@@ -24,12 +24,12 @@ module.exports = function (callback) {
 
     for (var i = 0; i < ham.length; i++) {
       x.push(ham[i]);
-      y.push([0]);
+      y.push([1,0]);
     }
 
     for (var i = 0; i < spam.length; i++) {
       x.push(spam[i]);
-      y.push([1]);
+      y.push([0,1]);
     }
 
     callback({
