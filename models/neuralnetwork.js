@@ -120,7 +120,13 @@ function NeuralNetwork () {
         bias: this.output.bias,
         activation: this.output.activationName,
       },
-      weights: this.weights,
+      weights: [],
+    }
+
+    // set weights
+    for (var i = 0; i < this.weights.length; i++) {
+      var weight = this.weights[i].tolist();
+      json.weights.push(weight);
     }
 
     // set hidden layers

@@ -9,23 +9,23 @@ var Trainer = NeuralNetworkJS.Trainer;
 function train (trainX, trainY, testX, testY) {
   var trainer = new Trainer();
 
-  // architect neural network
-  var neuralNetwork = new NeuralNetwork();
-  neuralNetwork.name = "spam-classifier";
-  neuralNetwork.input.size = trainX[0].length;
-  neuralNetwork.input.bias = true;
-  neuralNetwork.input.setActivation("linear");
-  neuralNetwork.addHiddenLayer(10, "sigmoid", true);
-  neuralNetwork.output.size = trainY[0].length;
-  neuralNetwork.output.setActivation("sigmoid");
-  neuralNetwork.generate();
-  trainer.neuralNetwork = neuralNetwork;
+  // // architect neural network
+  // var neuralNetwork = new NeuralNetwork();
+  // neuralNetwork.name = "spam-classifier";
+  // neuralNetwork.input.size = trainX[0].length;
+  // neuralNetwork.input.bias = true;
+  // neuralNetwork.input.setActivation("linear");
+  // neuralNetwork.addHiddenLayer(10, "sigmoid", true);
+  // neuralNetwork.output.size = trainY[0].length;
+  // neuralNetwork.output.setActivation("sigmoid");
+  // neuralNetwork.generate();
+  // trainer.neuralNetwork = neuralNetwork;
 
-  // trainer.generateFromFile("spam-classification.json");
+  trainer.generateFromFile("spam-classifier.json");
 
   trainer.x = trainX;
   trainer.y = trainY;
-  trainer.scalar = 0.000001;
+  trainer.scalar = 0.001;
   trainer.lambda = 0.0001;
   trainer.goal = 0.0;
   trainer.train(1000);
