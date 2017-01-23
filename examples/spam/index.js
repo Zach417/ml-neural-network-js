@@ -13,8 +13,9 @@ function train (trainX, trainY, testX, testY) {
   var neuralNetwork = new NeuralNetwork();
   neuralNetwork.name = "spam-classifier";
   neuralNetwork.input.size = trainX[0].length;
+  neuralNetwork.input.bias = true;
   neuralNetwork.input.setActivation("linear");
-  neuralNetwork.addHiddenLayer(10, "sigmoid");
+  neuralNetwork.addHiddenLayer(10, "sigmoid", true);
   neuralNetwork.output.size = trainY[0].length;
   neuralNetwork.output.setActivation("sigmoid");
   neuralNetwork.generate();

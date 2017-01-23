@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var NeuralNetwork = require('./NeuralNetwork');
+var NeuralNetwork = require('./neuralnetwork');
 var nj = require('../utils/numjs');
 var DataUtility = require('../utils/data');
 var mu = require('../utils/matrix');
@@ -22,6 +22,13 @@ function Trainer() {
   this.train = function (epochs) {
     var w = this.neuralNetwork.weights;
 
+    // add bias to input if defined
+    if (this.neuralNetwork.input.bias) {
+      for (var j = 0; j < this.x.length; j++) {
+        this.x[j].push(1);
+      }
+    }
+
     console.log("\nComputing cost function - " + epochs + " iterations");
     for (var d = 0; d < epochs; d++) {
       this.yHat = this.neuralNetwork.forward(this.x);
@@ -30,7 +37,7 @@ function Trainer() {
 
       for (var i = 0; i < this.dJdW.length; i++) {
         var scalar = this.dJdW[i].assign(this.scalar);
-        var newWeights = nj.array(w[i]).subtract(scalar.multiply(this.dJdW[i])).tolist();
+        var newWeights = w[i].subtract(scalar.multiply(this.dJdW[i]));
         this.neuralNetwork.weights[i] = newWeights;
       }
 
@@ -88,8 +95,8 @@ function Trainer() {
     }
 
     // final backward propagation
-    this.delta[0] = nj.dot(this.delta[1], nj.array(weights[1]).T).multiply(nj.array(hidden[0].activatePrime(hidden[0].z)));
-    this.dJdW[0] = nj.dot(x.T, this.delta[0]);
+    this.delta[0] = this.delta[1].dot(weights[1].T).multiply(nj.array(hidden[0].activatePrime(hidden[0].z)));
+    this.dJdW[0] = x.T.dot(this.delta[0]);
   }
 
   this.generateFromFile = function (fileName) {

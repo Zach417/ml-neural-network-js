@@ -3,6 +3,7 @@ var math = require('../utils/math');
 
 function Layer() {
   this.size = 0;
+  this.bias = false;
   this.activation;
   this.activationName;
 

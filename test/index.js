@@ -13,21 +13,23 @@ var testY = trainY;
 var neuralNetwork = new NeuralNetwork();
 neuralNetwork.input.size = trainX[0].length;
 neuralNetwork.input.setActivation("linear");
-neuralNetwork.addHiddenLayer(3, "hyperbolic-tangent");
-neuralNetwork.addHiddenLayer(3, "hyperbolic-tangent");
+neuralNetwork.input.bias = true;
+neuralNetwork.addHiddenLayer(6, "hyperbolic-tangent");
 neuralNetwork.output.size = trainY[0].length;
 neuralNetwork.output.setActivation("hyperbolic-tangent");
 neuralNetwork.generate();
 
 // train
 trainer.neuralNetwork = neuralNetwork;
-trainer.generateFromFile("cosine.json");
-console.log(trainer.neuralNetwork.forward([[Math.PI], [Math.PI / 2]]));
-trainer.scalar = 0.000001;
-trainer.lambda = 0.00001;
-trainer.goal = 0.0001;
-trainer.train(100000);
+//trainer.generateFromFile("cosine.json");
+console.log(trainer.neuralNetwork.forward([[0]]));
+trainer.scalar = 0.00001;
+trainer.lambda = 0.001;
+trainer.goal = 0.001;
+trainer.train(1000);
 trainer.writeToFile();
+
+console.log(trainer.neuralNetwork.forward([[0], [Math.PI], [Math.PI / 2]]));
 
 // print results
 console.log("\nTraining data set results");

@@ -7,7 +7,7 @@ var epochs = 10000;
 var sets = 100;
 
 var f = function (x) {
-  return 0;
+  return Math.cos(x);
 }
 
 // creates multiple y values for the same x
